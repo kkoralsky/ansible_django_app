@@ -1,0 +1,9 @@
+---
+user: "{{ ansible_user }}"
+home: "{{ ansible_env.HOME }}"
+# concat paths defined in playbook
+app_path: "{{ home }}/{{ app }}"
+uwsgi_ini_path: "{{ home }}/{{ uwsgi_ini }}"
+requirements_path: "{{ app_path }}/{{ requirements }}"
+django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
+venv_path: "{{ home }}/{{ venv }}"

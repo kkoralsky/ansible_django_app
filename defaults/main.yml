@@ -1,0 +1,13 @@
+---
+force_venv: False
+force_manage: False
+
+py_ver: 3
+port: 8000
+branch: master
+settings_template: _default_settings.py.j2
+uwsgi_ini_template: _default_uwsgi.ini.j2
+requirements: requirements/base.txt
+django_settings_module: www.settings
+uwsgi_ini: uwsgi.ini
+venv: venv

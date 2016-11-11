@@ -1,0 +1,79 @@
+---
+- name: update apt cache
+  apt: update_cache=yes
+  run_once: true
+
+- name: install python and rest packages
+  apt: name="{{ item }}"
+  with_items:
+    - supervisor
+    - "python{{ py_ver }}"
+    - "python{{ py_ver }}-dev"
+    - "python{{ py_ver }}-virtualenv"
+    - git
+    - postgresql-server-dev
+    - build-essential
+    - libpq-dev
+
+- name: pull application from repo
+  git:
+    repo: "{{ git_repo }}"
+    version: "{{ branch }}"
+    accept_hostkey: True
+    dest: "{{ app_path }}"
+    force: yes
+  register: git
+
+- name: configure uwsgi
+  template:
+    src: "{{ uwsgi_ini_template }}"
+    dest: "{{ uwsgi_ini_path }}" 
+
+- name: configure django settings
+  template:
+    src: "{{ settings_template }}"
+    dest: "{{ django_settings_path }}"
+
+- name: check venv dir
+  stat: path="{{ venv_path }}"
+  register: venv_dir_stat
+
+- name: create initial venv
+  shell: "virtualenv {{ venv_path }} -p /usr/bin/python{{ py_ver }}"
+  when: not venv_dir_stat.stat.exists or force_venv
+
+- name: configure venv
+  environment:
+    DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+  pip:
+    virtualenv: "{{ venv_path }}"
+    virtualenv_command: "virtualenv"
+    requirements: "{{ requirements_path }}"
+  when: git.changed or force_venv
+
+- name: run manage.py
+  django_manage:
+    command: "{{ item }}"
+    app_path: "{{ app_path }}"
+    virtualenv: "{{ venv_path }}"
+  environment:
+    DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+  ignore_errors: yes
+  with_items:
+    - compilemessages
+    - collectstatic
+    - migrate
+  when: git.changed or force_manage
+
+- name: restart uwsgi
+  file: path="{{ uwsgi_ini_path }}" state=touch
+
+- name: load fixtures
+  django_manage:
+    command: loaddata
+    app_path: "{{ app_path }}"
+    virtualenv: "{{ venv_path }}"
+    fixtures: "{{ fixtures|join(' ') }}"
+  environment:
+    DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+  when: fixtures is defined

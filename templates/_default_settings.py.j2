@@ -1,0 +1,20 @@
+# prolly too generic
+
+from .base import *
+
+SECRET_KEY = '{{ secret }}'
+
+DEBUG = False
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '{{ db_name }}',
+        'HOST': '{{ db_host }}',
+        'PORT': '{{ db_port }}',
+        'USER': '{{ db_user }}',
+        'PASSWORD': '{{ db_pass }}',
+    }
+}
+
+ALLOWED_HOSTS = ('*',)
