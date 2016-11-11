@@ -2,6 +2,7 @@
 - name: update apt cache
   apt: update_cache=yes
   run_once: true
+  become: true
 
 - name: install python and rest packages
   apt: name="{{ item }}"
@@ -14,6 +15,7 @@
     - postgresql-server-dev
     - build-essential
     - libpq-dev
+  become: true
 
 - name: pull application from repo
   git:
