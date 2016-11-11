@@ -12,7 +12,7 @@
     - "python{{ py_ver }}-dev"
     - "python{{ py_ver }}-virtualenv"
     - git
-    - postgresql-server-dev
+    - postgresql-server-dev-all
     - build-essential
     - libpq-dev
   become: true
