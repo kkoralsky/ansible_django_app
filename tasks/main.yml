@@ -1,9 +1,4 @@
 ---
-- name: update apt cache
-  apt: update_cache=yes
-  run_once: true
-  become: true
-
 - name: install python and rest packages
   apt: name="{{ item }}"
   with_items:
@@ -16,6 +11,7 @@
     - build-essential
     - libpq-dev
   become: true
+  tags: superuser
 
 - name: pull application from repo
   git:
@@ -23,6 +19,7 @@
     version: "{{ branch }}"
     accept_hostkey: True
     dest: "{{ app_path }}"
+    recursive: yes
     force: yes
   register: git
 

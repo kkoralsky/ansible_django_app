@@ -1,7 +1,7 @@
 # reasonable uwsgi config for staging/development env.
 
 [uwsgi]
-socket = 127.0.0.1:{{ port }}
+socket = {{ uwsgi_host }}:{{ uwsgi_port }}
 uid = {{ user }}
 chdir = {{ app_path }}
 module = {{ app }}.wsgi

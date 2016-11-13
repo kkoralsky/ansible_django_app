@@ -1,6 +1,7 @@
 ---
+# convinience mappings
 user: "{{ ansible_user }}"
-home: "{{ ansible_env.HOME }}"
+home: "{{ ansible_user_dir }}"
 # concat paths defined in playbook
 app_path: "{{ home }}/{{ app }}"
 uwsgi_ini_path: "{{ home }}/{{ uwsgi_ini }}"

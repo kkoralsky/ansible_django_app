@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Karol Ossowski
+  description: Django app in uWsgi container
+  license: BSD
+
+  min_ansible_version: 1.2
+
+  platforms:
+  - name: Debian
+    versions:
+    - all
+
+  galaxy_tags: [django, uwsgi, supervisor, debian]
+
+dependencies:
+  - role: debian_common 
+    become: true
+    tags: superuser

@@ -2,12 +2,16 @@
 force_venv: False
 force_manage: False
 
+uwsgi_host: 127.0.0.1
+uwsgi_port: 8000
+
 py_ver: 3
-port: 8000
 branch: master
 settings_template: _default_settings.py.j2
 uwsgi_ini_template: _default_uwsgi.ini.j2
 requirements: requirements/base.txt
 django_settings_module: www.settings
+
+# not likely to customize
 uwsgi_ini: uwsgi.ini
 venv: venv
