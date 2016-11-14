@@ -6,5 +6,7 @@ home: "{{ ansible_user_dir }}"
 app_path: "{{ home }}/{{ app }}"
 uwsgi_ini_path: "{{ home }}/{{ uwsgi_ini }}"
 requirements_path: "{{ app_path }}/{{ requirements }}"
+log_path: "{{ home }}/{{ app}}_log"
 django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
 venv_path: "{{ home }}/{{ venv }}"
+
