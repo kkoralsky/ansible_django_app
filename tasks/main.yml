@@ -76,3 +76,8 @@
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
   when: fixtures is defined
+
+- name: configure supervisor
+  template: src=supervisor.conf.j2 dest='/etc/supervisor/conf.d/{{ app }}.conf'
+  notify: reload supervisor
+
