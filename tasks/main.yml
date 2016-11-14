@@ -80,4 +80,5 @@
 - name: configure supervisor
   template: src=supervisor.conf.j2 dest='/etc/supervisor/conf.d/{{ app }}.conf'
   notify: reload supervisor
-
+  become: true
+  tags: superuser
