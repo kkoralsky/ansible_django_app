@@ -1,5 +1,5 @@
 [program:{{ app }}]
-command={{ app_path }}/bin/uwsgi --ini {{ uwsgi_ini_path }}
+command={{ venv_path }}/bin/uwsgi --ini {{ uwsgi_ini_path }}
 autostart=true
 autorestart=true
 startretries=3
