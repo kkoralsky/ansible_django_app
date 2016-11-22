@@ -1,8 +1,7 @@
 ---
-- name: install python and rest packages
+- name: install python and devel. packages for venv setup
   apt: name="{{ item }}"
   with_items:
-    - supervisor
     - "python{{ py_ver }}"
     - "python{{ py_ver }}-dev"
     - "python{{ py_ver }}-virtualenv"
@@ -23,14 +22,9 @@
     force: yes
   register: git
 
-- name: configure uwsgi
-  template:
-    src: "{{ uwsgi_ini_template }}"
-    dest: "{{ uwsgi_ini_path }}" 
-
 - name: configure django settings
   template:
-    src: "{{ settings_template }}"
+    src: "{{ settings_tpl }}"
     dest: "{{ django_settings_path }}"
 
 - name: check venv dir
@@ -63,9 +57,7 @@
     - collectstatic
     - migrate
   when: git.changed or force_manage
-
-- name: restart uwsgi
-  file: path="{{ uwsgi_ini_path }}" state=touch
+  notify: "reload app"
 
 - name: load fixtures
   django_manage:
@@ -76,12 +68,3 @@
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
   when: fixtures is defined
-
-- name: create log dir
-  file: name='{{ log_path }}' state=directory
-
-- name: configure supervisor
-  template: src=supervisor.conf.j2 dest='/etc/supervisor/conf.d/{{ app }}.conf'
-  notify: reload supervisor
-  become: true
-  tags: superuser

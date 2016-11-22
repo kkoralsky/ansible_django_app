@@ -1,4 +1,0 @@
-- name: reload supervisor
-  supervisorctl: name='{{ app }}' state=restarted
-  become: true
-  tags: superuser

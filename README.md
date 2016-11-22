@@ -1,8 +1,8 @@
-Django uWsgi container
-======================
+Django app
+==========
 
 
-Django app in uWsgi container
+Ansible role to pull and setup Django app ready to serve.
 
 Requirements
 ------------
@@ -13,9 +13,11 @@ via SSH.
 Role Variables
 --------------
 
-basic
+basic (inherited from `django_common`)
 
-- `app` - name of Django app to install - preferably - a git repo name
+- `app` - app label (base directory); required
+- `app_name` - name of Django app defaults to `{{ app }}`, used only if you need to
+    have couple applications on the same host
 
 Git repo
 
@@ -26,34 +28,32 @@ venv
 
 - `py_ver` - python major version: either 2 or 3 (default: 3)
 - `requirements` - path to requirements.txt file relative to project repo
+- `force_venv` - force (re)creation of venv; default: `no`
 
 Django
 
-- `django_settings_module` - defaults to `www.settings`
-- `settings_template` - path to settings template; check `templates/_default_settings.py.j2` for default
-- `db_host`, `db_port`, `db_name`, `db_pass` - database connection details (used in default template)
-
-uWsgi customization
-
-- `uwsgi_ini_template` - uwsgi.ini template; check `templates/_default_uwsgi.ini.j2` for default one
-- `uwsgi_host` - defaults to `127.0.0.1` (used in default template)
-- `uwsgi_port` - defaults to `8000` (used in default template)
+- `settings_tpl` - path to settings template; check `templates/_default_settings.py.j2` for default
+- `db_host`, `db_port`, `db_name`, `db_pass` - database connection details; used in (default) settings template
+- `secret` - value for `SECRET_KEY` in (default) settings template
+- `force_manage` - if true, django manage.py's `compilemessage`, `collectstatic` & `migrate` is performed
+    even if no change in git repo was made
+- `fixtures` - list of fixtures to apply; if empty or undefined, step is omitted
 
 
 Dependencies
 ------------
 
-- `xkoralsky.debian_common`
+- https://github.com/xkoralsky/django_common.git
 
 Example Playbook
 ----------------
 
     - hosts: servers
       roles:
-        - role: django_uwsgi
+        - role: django_app
           git_repo: https://github.com/xkoralsky/sample.git
+          requirements: requirements.txt
           branch: develop
-          deployment_key: ~/deployments/sample_deployment.pub
 
 License
 -------
