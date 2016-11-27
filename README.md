@@ -43,7 +43,7 @@ Django
 Dependencies
 ------------
 
-- https://github.com/xkoralsky/django_common.git
+- https://github.com/xkoralsky/ansible_django_common.git
 
 Example Playbook
 ----------------
