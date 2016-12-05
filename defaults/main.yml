@@ -3,6 +3,8 @@ force_venv: False
 force_manage: False
 
 branch: master
-settings_tpl: _default_settings.py.j2
+#settings_tpl: _default_settings.py.j2
 py_ver: 3
 requirements: requirements/base.txt
+
+fixtures: []

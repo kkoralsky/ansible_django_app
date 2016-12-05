@@ -2,15 +2,31 @@
 - name: install python and devel. packages for venv setup
   apt: name="{{ item }}"
   with_items:
-    - "python{{ py_ver }}"
-    - "python{{ py_ver }}-dev"
-    - "python{{ py_ver }}-virtualenv"
+    - "python{{ py_package_suf }}"
+    - "python{{ py_package_suf }}-dev"
+    - "python{{ py_package_suf }}-virtualenv"
     - git
     - postgresql-server-dev-all
     - build-essential
     - libpq-dev
+    - virtualenv
   become: true
   tags: superuser
+  when: ansible_connection != 'docker'
+
+- name: install python and devel. packages for venv setup
+  apt: name="{{ item }}"
+  with_items:
+    - "python{{ py_package_suf }}"
+    - "python{{ py_package_suf }}-dev"
+    - "python{{ py_package_suf }}-virtualenv"
+    - git
+    - postgresql-server-dev-all
+    - build-essential
+    - libpq-dev
+  remote_user: root
+  tags: superuser
+  when: ansible_connection == 'docker'
 
 - name: pull application from repo
   git:
@@ -21,50 +37,51 @@
     recursive: yes
     force: yes
   register: git
+  when: git_repo is defined
 
 - name: configure django settings
   template:
     src: "{{ settings_tpl }}"
     dest: "{{ django_settings_path }}"
-
-- name: check venv dir
-  stat: path="{{ venv_path }}"
-  register: venv_dir_stat
-
-- name: create initial venv
-  shell: "virtualenv {{ venv_path }} -p /usr/bin/python{{ py_ver }}"
-  when: not venv_dir_stat.stat.exists or force_venv
+  when: settings_tpl is defined
 
 - name: configure venv
-  environment:
-    DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
   pip:
     virtualenv: "{{ venv_path }}"
-    virtualenv_command: "virtualenv"
+    virtualenv_python: 'python{{ py_ver }}'
     requirements: "{{ requirements_path }}"
-  when: git.changed or force_venv
+  when: (git is defined and git.changed) or force_venv or git_repo is undefined
 
-- name: run manage.py
-  django_manage:
-    command: "{{ item }}"
-    app_path: "{{ app_path }}"
-    virtualenv: "{{ venv_path }}"
-  environment:
-    DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
+- block:
+  - name: run manage.py
+    django_manage:
+      command: "{{ item }}"
+      app_path: "{{ app_path }}"
+      virtualenv: "{{ venv_path }}"
+    with_items:
+      - compilemessages
+      - collectstatic
+      - syncdb
+      - migrate
+    when: (git is defined and git.changed) or force_manage or git_repo is undefined
+    notify: "reload app"
+
+  - name: run additional manage.py commands
+    django_manage:
+      command: "{{ item }}"
+      app_path: "{{ app_path }}"
+      virtualenv: "{{ venv_path }}"
+    with_items: '{{ additional_commands|default([]) }}'
+
+  - name: load fixtures
+    django_manage:
+      command: loaddata
+      app_path: "{{ app_path }}"
+      virtualenv: "{{ venv_path }}"
+      fixtures: "{{ fixtures|join(' ') }}"
+    when: fixtures is defined and fixtures|length > 0
+
   ignore_errors: yes
-  with_items:
-    - compilemessages
-    - collectstatic
-    - migrate
-  when: git.changed or force_manage
-  notify: "reload app"
-
-- name: load fixtures
-  django_manage:
-    command: loaddata
-    app_path: "{{ app_path }}"
-    virtualenv: "{{ venv_path }}"
-    fixtures: "{{ fixtures|join(' ') }}"
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
-  when: fixtures is defined
+
