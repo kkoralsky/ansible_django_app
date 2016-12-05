@@ -17,3 +17,8 @@ dependencies:
   - role: debian_common 
     become: true
     tags: superuser
+    when: ansible_connection != 'docker'
+  - role: debian_common
+    remote_user: root
+    tags: superuser
+    when: ansible_connection == 'docker'
