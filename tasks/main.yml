@@ -38,6 +38,8 @@
     force: yes
   register: git
   when: git_repo is defined
+  notify: "reload app"
+  tags: upgrade
 
 - name: configure django settings
   template:
@@ -51,6 +53,7 @@
     virtualenv_python: 'python{{ py_ver }}'
     requirements: "{{ requirements_path }}"
   when: (git is defined and git.changed) or force_venv or git_repo is undefined
+  tags: upgrade
 
 - block:
   - name: run manage.py
@@ -64,7 +67,6 @@
       - syncdb
       - migrate
     when: (git is defined and git.changed) or force_manage or git_repo is undefined
-    notify: "reload app"
 
   - name: run additional manage.py commands
     django_manage:
@@ -84,4 +86,4 @@
   ignore_errors: yes
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
-
+  tags: upgrade
