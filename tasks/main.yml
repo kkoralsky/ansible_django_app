@@ -10,6 +10,7 @@
     - build-essential
     - libpq-dev
     - virtualenv
+    - gettext
   become: true
   tags: superuser
   when: ansible_connection != 'docker'
