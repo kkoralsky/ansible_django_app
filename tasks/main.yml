@@ -1,52 +1,39 @@
 ---
 - name: install python and devel. packages for venv setup
   apt: name="{{ item }}"
-  with_items:
-    - "python{{ py_package_suf }}"
-    - "python{{ py_package_suf }}-dev"
-    - "python{{ py_package_suf }}-virtualenv"
-    - git
-    - postgresql-server-dev-all
-    - build-essential
-    - libpq-dev
-    - virtualenv
-    - gettext
+  with_items: '{{ django_packages }}'
   become: true
   tags: superuser
-  when: ansible_connection != 'docker'
+  when: isnotdocker
 
 - name: install python and devel. packages for venv setup
   apt: name="{{ item }}"
-  with_items:
-    - "python{{ py_package_suf }}"
-    - "python{{ py_package_suf }}-dev"
-    - "python{{ py_package_suf }}-virtualenv"
-    - git
-    - postgresql-server-dev-all
-    - build-essential
-    - libpq-dev
   remote_user: root
-  tags: superuser
-  when: ansible_connection == 'docker'
+  with_items: '{{ django_packages }}'
+  when: isdocker
 
 - name: pull application from repo
   git:
     repo: "{{ git_repo }}"
+    key_file: '{{ git_private_key }}'
     version: "{{ branch }}"
     accept_hostkey: True
     dest: "{{ app_path }}"
     recursive: yes
     force: yes
   register: git
-  when: git_repo is defined
+  when: 
+    - git_repo is defined
+    - git_repo is not none
   notify: "reload app"
   tags: upgrade
 
 - name: configure django settings
   template:
-    src: "{{ settings_tpl }}"
+    src: "{{ django_settings_tpl }}"
     dest: "{{ django_settings_path }}"
-  when: settings_tpl is defined
+  when: django_settings_tpl is defined
+  tags: upgrade
 
 - name: configure venv
   pip:
@@ -62,29 +49,41 @@
       command: "{{ item }}"
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
-    with_items:
-      - compilemessages
-      - collectstatic
-      - syncdb
-      - migrate
+    with_items: '{{ django_commands }}'
     when: (git is defined and git.changed) or force_manage or git_repo is undefined
-
-  - name: run additional manage.py commands
-    django_manage:
-      command: "{{ item }}"
-      app_path: "{{ app_path }}"
-      virtualenv: "{{ venv_path }}"
-    with_items: '{{ additional_commands|default([]) }}'
 
   - name: load fixtures
     django_manage:
       command: loaddata
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
-      fixtures: "{{ fixtures|join(' ') }}"
-    when: fixtures is defined and fixtures|length > 0
+      fixtures: "{{ django_fixtures|default([])|join(' ') }}"
 
-  ignore_errors: yes
+  - name: create superusers
+    django_manage:
+      command: '
+        createsuperuser --noinput
+          {% if item.email is defined %}--email {{ item.email }}{% endif %}
+          {% if item.username is defined %}--username {{ item.username }}{% endif %}
+      '
+      virtualenv: '{{ venv_path }}'
+      app_path: '{{ app_path }}'
+    with_items: '{{ django_admins }}'
+
+  - name: install pexpect
+    apt: name=python-pexpect
+    become: true
+    when: django_admins|length>0 or django_users|length>0
+
+  - name: change passwords
+    expect:
+      chdir: '{{ app_path }}'
+      command: '{{ venv_path }}/bin/python{{ py_ver }} manage.py changepassword {{ item.user }}'
+      responses:
+        Password: '{{ item.pass }}'
+    with_items: '{{ django_admins|union(django_users) }}'
+
+  ignore_errors: django_ignore_manage_erros
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
   tags: upgrade

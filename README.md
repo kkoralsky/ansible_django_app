@@ -32,12 +32,13 @@ venv
 
 Django
 
-- `settings_tpl` - path to settings template; check `templates/_default_settings.py.j2` for default
+- `django_settings_tpl` - path to settings template; check `templates/_default_settings.py.j2` for default
+- `django_settings_module` - *dot seperated* python module holding settings for Django
 - `db_host`, `db_port`, `db_name`, `db_pass` - database connection details; used in (default) settings template
 - `secret` - value for `SECRET_KEY` in (default) settings template
 - `force_manage` - if true, django manage.py's `compilemessage`, `collectstatic` & `migrate` is performed
     even if no change in git repo was made
-- `fixtures` - list of fixtures to apply; if empty or undefined, step is omitted
+- `django_fixtures` - list of fixtures to apply
 
 
 Dependencies

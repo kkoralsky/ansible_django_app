@@ -3,8 +3,32 @@ force_venv: False
 force_manage: False
 
 branch: master
-#settings_tpl: _default_settings.py.j2
+git_private_key:
 py_ver: 3
 requirements: requirements/base.txt
 
-fixtures: []
+django_fixtures: []
+
+django_ignore_manage_errors: yes
+django_admins: []
+django_users: []
+
+django_settings_tpl: _default_settings.py.j2
+django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
+
+django_packages:
+  - "python{{ py_package_suf }}"
+  - "python{{ py_package_suf }}-dev"
+  - "python{{ py_package_suf }}-virtualenv"
+  - git
+  - postgresql-server-dev-all
+  - build-essential
+  - libpq-dev
+  - virtualenv
+  - gettext
+
+django_commands:
+  - compilemessages
+  - collectstatic
+  - syncdb
+  - migrate
