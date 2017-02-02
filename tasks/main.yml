@@ -58,6 +58,7 @@
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
       fixtures: "{{ django_fixtures|default([])|join(' ') }}"
+    when: django_fixtures
 
   - name: create superusers
     django_manage:
