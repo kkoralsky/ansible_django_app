@@ -75,6 +75,7 @@
     apt: name=python-pexpect
     become: true
     when: django_admins|length>0 or django_users|length>0
+    tags: superuser
 
   - name: change passwords
     expect:
