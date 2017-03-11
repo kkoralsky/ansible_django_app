@@ -33,6 +33,7 @@
     src: "{{ django_settings_tpl }}"
     dest: "{{ django_settings_path }}"
   when: django_settings_tpl is defined
+  notify: "reload app"
   tags: upgrade
 
 - name: configure venv
