@@ -14,7 +14,6 @@ django_admins: []
 django_users: []
 
 #django_settings_tpl: _default_settings.py.j2
-django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
 
 django_packages:
   - "python{{ py_package_suf }}"
