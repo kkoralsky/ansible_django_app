@@ -23,7 +23,7 @@ django_packages:
   - postgresql-server-dev-all
   - build-essential
   - libpq-dev
-  - virtualenv
+  #- virtualenv
   - gettext
 
 django_commands:

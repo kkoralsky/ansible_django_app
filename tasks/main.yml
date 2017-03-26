@@ -36,6 +36,14 @@
   notify: "reload app"
   tags: upgrade
 
+- name: install virtualenv if not availible
+  apt: name=virtualenv
+  when: not '/usr/bin/virtualenv'|exists
+
+- name: install newest pip
+  pip: name=pip state=latest virtualenv='{{ venv_path }}'
+       virtualenv_python='python{{ py_ver }}'
+
 - name: configure venv
   pip:
     virtualenv: "{{ venv_path }}"
