@@ -14,11 +14,3 @@ galaxy_info:
 
 dependencies:
   - role: django_common
-  - role: debian_common 
-    become: true
-    tags: superuser
-    when: isnotdocker
-  - role: debian_common
-    remote_user: root
-    tags: superuser
-    when: isdocker
