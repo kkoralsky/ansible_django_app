@@ -20,6 +20,7 @@
     accept_hostkey: True
     dest: "{{ app_path }}"
     recursive: yes
+    umask: '{{ git_umask }}'
     force: yes
   register: git
   when: 
@@ -36,9 +37,20 @@
   notify: "reload app"
   tags: upgrade
 
-- name: install virtualenv if not availible
+- name: check if virtualenv is avail.
+  stat: path=/usr/bin/virtualenv
+  register: virtualenv
+
+- name: install virtualenv if not avail.
   apt: name=virtualenv
-  when: not '/usr/bin/virtualenv'|exists
+  when: isnotdocker and not virtualenv.stat.exists
+  become: true
+  tags: superuser
+
+- name: install virtualenv if not available
+  apt: name=virtualenv
+  remote_user: root
+  when: isdocker and not virtualenv.stat.exists
 
 - name: install newest pip
   pip: name=pip state=latest virtualenv='{{ venv_path }}'

@@ -4,6 +4,7 @@ force_manage: False
 
 branch: master
 git_private_key:
+git_umask: '022'
 py_ver: 3
 requirements: requirements/base.txt
 
