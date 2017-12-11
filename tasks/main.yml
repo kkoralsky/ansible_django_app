@@ -1,16 +1,17 @@
 ---
-- name: install python and devel. packages for venv setup
-  apt: name="{{ item }}"
+- name: install python & devel. packages for venv setup
+  apt: name="{{ item }}" update_cache=yes
   with_items: '{{ django_packages }}'
   become: true
   tags: superuser
-  when: isnotdocker
 
-- name: install python and devel. packages for venv setup
-  apt: name="{{ item }}"
-  remote_user: root
-  with_items: '{{ django_packages }}'
-  when: isdocker
+- name: install venv itself using pip
+  pip: name=virtualenv state=latest executable='pip{{ py_ver }}'
+  become: true
+  tags: superuser
+
+- name: setup venv & ensure pip is fresh
+  pip: name=pip state=latest virtualenv='{{ venv_path }}'
 
 - name: pull application from repo
   git:
@@ -29,39 +30,17 @@
   notify: "reload app"
   tags: upgrade
 
+- name: install pip requirements
+  pip: virtualenv='{{ venv_path }}' requirements='{{ requirements_path }}'
+  when: (git is defined and git.changed) or force_venv or git_repo is undefined
+  tags: upgrade
+
 - name: configure django settings
   template:
     src: "{{ django_settings_tpl }}"
     dest: "{{ django_settings_path }}"
   when: django_settings_tpl is defined
   notify: "reload app"
-  tags: upgrade
-
-- name: check if virtualenv is avail.
-  stat: path=/usr/bin/virtualenv
-  register: virtualenv
-
-- name: install virtualenv if not avail.
-  apt: name=virtualenv
-  when: isnotdocker and not virtualenv.stat.exists
-  become: true
-  tags: superuser
-
-- name: install virtualenv if not available
-  apt: name=virtualenv
-  remote_user: root
-  when: isdocker and not virtualenv.stat.exists
-
-- name: install newest pip
-  pip: name=pip state=latest virtualenv='{{ venv_path }}'
-       virtualenv_python='python{{ py_ver }}'
-
-- name: configure venv
-  pip:
-    virtualenv: "{{ venv_path }}"
-    virtualenv_python: 'python{{ py_ver }}'
-    requirements: "{{ requirements_path }}"
-  when: (git is defined and git.changed) or force_venv or git_repo is undefined
   tags: upgrade
 
 - block:
