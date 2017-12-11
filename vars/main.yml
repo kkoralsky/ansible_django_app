@@ -1,6 +1,3 @@
 ---
 requirements_path: "{{ app_path }}/{{ requirements }}"
 py_package_suf: '{% if py_ver == 3 %}3{% endif %}'
-
-isdocker: ansible_connection == "docker"
-isnotdocker: ansible_connection != "docker"
