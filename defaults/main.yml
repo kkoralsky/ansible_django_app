@@ -1,4 +1,15 @@
 ---
+# convinience mappings
+user: "{{ ansible_user_id }}"
+home: "{{ ansible_user_dir }}"
+
+# django app name
+app_name: '{{ app }}'
+
+app_base_path: '{{ home }}/{{ app }}'
+app_path: "{{ app_base_path }}/{{ app }}"
+venv_path: "{{ app_base_path }}/venv"
+
 force_venv: False
 force_manage: False
 
@@ -7,6 +18,9 @@ git_private_key:
 git_umask: '022'
 py_ver: 3
 requirements: requirements/base.txt
+
+django_settings_module: '{{ app_name }}.settings'
+django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
 
 django_fixtures: []
 

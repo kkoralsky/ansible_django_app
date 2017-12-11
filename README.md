@@ -13,13 +13,13 @@ via SSH.
 Role Variables
 --------------
 
-basic (inherited from `django_common`)
+basic:
 
 - `app` - app label (base directory); required
 - `app_name` - name of Django app defaults to `{{ app }}`, used only if you need to
-    have couple applications on the same host
+    have couple deployments for single app/repo
 
-Git repo
+git repo
 
 - `git_repo` - address to git repo (required)
 - `branch` - branch to pull from (default: `master`)
