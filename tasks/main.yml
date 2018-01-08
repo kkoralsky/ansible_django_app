@@ -27,6 +27,7 @@
     umask: '{{ git_umask }}'
     force: yes
   register: git
+  changed_when: git.after != git.before
   when: 
     - git_repo is defined
     - git_repo is not none
