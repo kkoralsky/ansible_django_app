@@ -40,11 +40,9 @@ Django
     even if no change in git repo was made
 - `django_fixtures` - list of fixtures to apply
 
+OS
 
-Dependencies
-------------
-
-- https://github.com/xkoralsky/ansible_django_common.git
+- `django_packges` - list of `.deb` packages that should be installed for venv & app 
 
 Example Playbook
 ----------------
