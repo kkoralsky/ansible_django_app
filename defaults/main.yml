@@ -16,6 +16,8 @@ force_manage: False
 branch: master
 git_private_key:
 git_umask: '022'
+git_recursive: yes
+git_depth: null
 py_ver: 3
 requirements: requirements/base.txt
 
@@ -30,15 +32,7 @@ django_users: []
 
 #django_settings_tpl: _default_settings.py.j2
 
-django_packages:
-  - "python{{ py_package_suf }}"
-  - "python{{ py_package_suf }}-dev"
-  - "python{{ py_package_suf }}-pip"
-  - git
-  - postgresql-server-dev-all
-  - build-essential
-  - libpq-dev
-  - gettext
+django_packages: []
 
 django_commands:
   - compilemessages

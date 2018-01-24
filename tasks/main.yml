@@ -1,7 +1,7 @@
 ---
 - name: install python & devel. packages for venv setup
   apt: name="{{ item }}" update_cache=yes
-  with_items: '{{ django_packages }}'
+  with_items: '{{ core_django_packages }}+{{ django_packages }}'
   become: true
   tags: superuser
 
@@ -23,11 +23,12 @@
     version: "{{ branch }}"
     accept_hostkey: True
     dest: "{{ app_path }}"
-    recursive: yes
+    recursive: '{{ git_recursive }}'
     umask: '{{ git_umask }}'
+    depth: '{{ git_depth }}'
     force: yes
   register: git
-  changed_when: git.after != git.before
+  changed_when: (git.after is not defined) or (git.after != git.before)
   when: 
     - git_repo is defined
     - git_repo is not none

@@ -1,3 +1,15 @@
 ---
 requirements_path: "{{ app_path }}/{{ requirements }}"
 py_package_suf: '{% if py_ver == 3 %}3{% endif %}'
+
+core_django_packages:
+  - "python{{ py_package_suf }}"
+  - "python{{ py_package_suf }}-dev"
+  - "python{{ py_package_suf }}-pip"
+  - git
+  - postgresql-server-dev-all
+  - build-essential
+  - libpq-dev
+  - gettext
+
+
