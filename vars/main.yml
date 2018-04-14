@@ -11,5 +11,3 @@ core_django_packages:
   - build-essential
   - libpq-dev
   - gettext
-
-
