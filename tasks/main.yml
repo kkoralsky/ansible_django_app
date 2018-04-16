@@ -89,6 +89,9 @@
       responses:
         Password: '{{ item.pass }}'
     with_items: '{{ django_admins|union(django_users) }}'
+    when:
+      - item.has_key('user')
+      - item.has_key('pass')
 
   ignore_errors: '{{ django_ignore_manage_errors }}'
   environment:
