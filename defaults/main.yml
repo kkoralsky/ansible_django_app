@@ -38,5 +38,5 @@ django_venv: false
 django_commands:
   - compilemessages
   - collectstatic
-  - syncdb
+  #- syncdb
   - migrate
