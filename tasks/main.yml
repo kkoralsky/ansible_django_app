@@ -90,7 +90,7 @@
         Password: '{{ item.pass }}'
     with_items: '{{ django_admins|union(django_users) }}'
 
-  ignore_errors: django_ignore_manage_erros
+  ignore_errors: '{{ django_ignore_manage_errors }}'
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
   tags: upgrade
