@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  vars: 
+    app: dummy
+  roles:
+    - role: django_app
+      git_repo: https://github.com/kkoralsky/django-dummy-celery.git
+      django_admins:
+        - {username: koral, email: some_email@some_domain.eu, user: koral, pass: 'password123'}
+    - role: django_uwsgi
+
