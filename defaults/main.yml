@@ -10,8 +10,6 @@ app_base_path: '{{ home }}/{{ app }}'
 app_path: "{{ app_base_path }}/{{ app }}"
 venv_path: "{{ app_base_path }}/venv"
 
-force_venv: False
-force_manage: False
 
 branch: master
 git_private_key:
@@ -33,6 +31,9 @@ django_users: []
 #django_settings_tpl: _default_settings.py.j2
 
 django_packages: []
+
+django_manage:
+django_venv: false
 
 django_commands:
   - compilemessages

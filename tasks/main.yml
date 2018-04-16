@@ -37,7 +37,7 @@
 
 - name: install pip requirements
   pip: virtualenv='{{ venv_path }}' requirements='{{ requirements_path }}'
-  when: (git is defined and git.changed) or force_venv or git_repo is undefined
+  when: (git is defined and git.changed) or django_venv or git_repo is undefined
   tags: upgrade
 
 - name: configure django settings
@@ -55,7 +55,7 @@
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
     with_items: '{{ django_commands }}'
-    when: (git is defined and git.changed) or force_manage or git_repo is undefined
+    when: django_manage|bool or (git is defined and git.changed and django_manage|bool != false) or (git_repo is undefined and django_manage|bool != false)
 
   - name: load fixtures
     django_manage:
