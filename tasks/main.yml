@@ -96,4 +96,4 @@
   ignore_errors: '{{ django_ignore_manage_errors }}'
   environment:
     DJANGO_SETTINGS_MODULE: "{{ django_settings_module }}"
-  tags: upgrade
+  tags: upgrade, manage
