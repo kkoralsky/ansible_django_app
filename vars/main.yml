@@ -11,3 +11,5 @@ core_django_packages:
   - build-essential
   - libpq-dev
   - gettext
+
+django_path_mode: '{{ "%o"|format("0777"|int(base=8)-git_umask|int(base=8)) }}'

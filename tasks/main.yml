@@ -6,7 +6,7 @@
   tags: superuser
 
 - name: create app base directory
-  file: name='{{ app_base_path }}' state=directory
+  file: name='{{ app_base_path }}' state=directory mode='{{ django_path_mode }}'
 
 - name: install venv itself using pip
   pip: name=virtualenv state=latest executable='pip{{ py_ver }}'
