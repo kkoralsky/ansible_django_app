@@ -23,6 +23,7 @@ django_settings_module: '{{ app_name }}.settings'
 django_settings_path: "{{ app_path }}/{{ django_settings_module|replace('.', '/') }}.py"
 
 django_fixtures: []
+django_fixture_loader: loaddata  # or 'syncdata' (django_extension required)
 
 django_ignore_manage_errors: yes
 django_admins: []

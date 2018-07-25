@@ -59,7 +59,7 @@
 
   - name: load fixtures
     django_manage:
-      command: loaddata
+      command: '{{ django_fixture_loader }}'
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
       fixtures: "{{ django_fixtures|default([])|join(' ') }}"
