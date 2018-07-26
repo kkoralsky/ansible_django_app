@@ -59,10 +59,9 @@
 
   - name: load fixtures
     django_manage:
-      command: '{{ django_fixture_loader }}'
+      command: "{{ django_fixture_loader }} {{ django_fixtures|default([])|join(' ') }}"
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
-      fixtures: "{{ django_fixtures|default([])|join(' ') }}"
     when: django_fixtures
 
   - name: create superusers
