@@ -62,6 +62,9 @@
       command: "{{ django_fixture_loader }} {{ django_fixtures|default([])|join(' ') }}"
       app_path: "{{ app_path }}"
       virtualenv: "{{ venv_path }}"
+    register: loading_fixtures
+    changed_when: loading_fixtures.has_key("out") and loading_fixtures.out is search("Installed")
+    failed_when: not loading_fixtures.changed
     when: django_fixtures
 
   - name: create superusers
