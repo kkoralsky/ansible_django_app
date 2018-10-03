@@ -1,7 +1,6 @@
 ---
 - name: install python & devel. packages for venv setup
-  apt: name="{{ item }}" update_cache=yes
-  with_items: '{{ core_django_packages }}+{{ django_packages }}'
+  apt: name="{{ core_django_packages }}+{{ django_packages }}" update_cache=yes
   become: true
   tags: superuser
 
@@ -23,7 +22,7 @@
     version: "{{ branch }}"
     accept_hostkey: True
     dest: "{{ app_path }}"
-    recursive: '{{ git_recursive }}'
+    recursive: '{{ git_recursive|bool }}'
     umask: '{{ git_umask }}'
     depth: '{{ git_depth }}'
     force: yes
